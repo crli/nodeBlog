@@ -1,8 +1,8 @@
 /*
  * @Author: crli
  * @Date: 2020-01-14 16:55:45
- * @LastEditors  : crli
- * @LastEditTime : 2020-01-16 20:44:21
+ * @LastEditors: crli
+ * @LastEditTime: 2020-04-17 09:49:07
  * @Description: file content
  */
 import createError from 'http-errors'
@@ -15,6 +15,7 @@ import connectMongo from 'connect-mongo'
 import configlite from 'config-lite'
 import router from './routes/index.js'
 import mongodb from './mongodb/db.js'
+import { checkToken } from './utils'
 const config = configlite(__dirname)
 const app = express();
 
@@ -45,7 +46,9 @@ router(app)
 
 // data server
 mongodb.connect()
-
+app.use(function(req, res, next) {
+  checkToken(req, res, next)
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -54,9 +57,10 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
+  // console.log(res)
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  // console.log(res)
   // render the error page
   res.status(err.status || 500);
   res.render('error');
