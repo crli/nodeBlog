@@ -2,13 +2,13 @@
  * @Author: crli
  * @Date: 2020-04-20 11:30:09
  * @LastEditors: crli
- * @LastEditTime: 2020-04-20 11:30:53
+ * @LastEditTime: 2020-04-28 14:21:34
  * @Description: file content
  */
 const { mongoose } = require('../mongodb/db.js')
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true, validate: /\S+/ },
-  desc: String,
+  desc: { type: String }
 },
 {
   timestamps: {
@@ -17,4 +17,4 @@ const categorySchema = new mongoose.Schema({
   }
 })
 categorySchema.index({id: 1})
-module.exports = mongoose.model('Category', userSchema)
+module.exports = mongoose.model('Category', categorySchema)
