@@ -2,12 +2,25 @@
  * @Author: crli
  * @Date: 2020-04-20 15:48:49
  * @LastEditors: crli
- * @LastEditTime: 2020-04-27 13:31:10
+ * @LastEditTime: 2020-05-09 16:54:03
  * @Description: file content
  */
 import Article from '../models/article'
+import User from '../models/user'
 import { responseClient, authorization } from '../utils'
-
+import { timestampToTime } from '../utils'
+function getuserName (id, arr) {
+  let name = ''
+  arr.forEach((ele) => {
+    if (ele._id === id) {
+      name = ele.name
+    }
+  })
+  if (name) {
+    return name
+  }
+  return '佚名'
+}
 exports.addArticle = (req, res) => {
   const { id } = authorization(req, res)
   //验证用户是否已经在数据库中
@@ -88,13 +101,17 @@ exports.updateArticle = (req, res) => {
       category,
       img_url,
     },
-  ).then(res => {
-      responseClient(res, 200, '0000', '操作成功')
-    })
-    .catch(err => {
-      console.error(err)
-      responseClient(res)
-    })
+  ).then(result => {
+    if (result.n === 1) {
+      responseClient(res, 200, '0000', '操作成功!')
+    } else {
+      responseClient(res, 200, '0001', '文章不存在')
+    }
+  })
+  .catch(err => {
+    console.error(err)
+    responseClient(result)
+  })
 }
 exports.deleteArticle = (req, res) => {
   const { id } = authorization(req, res)
@@ -111,13 +128,13 @@ exports.deleteArticle = (req, res) => {
     responseClient(res, 400, '0004', '创建失败')
     return
   }
-  Article.deleteMany({ _id: articleId }).then(res => {
-    console.log(res)
-    // if (res.n === 1) {
-    //   responseClient(res, 200, '0000', '删除成功')
-    // } else {
-    //   responseClient(res, 200, '0001', '文章不存在')
-    // }
+  Article.deleteMany({ _id: articleId }).then(result => {
+    console.log(result)
+    if (result.n === 1) {
+      responseClient(res, 200, '0000', '操作成功!')
+    } else {
+      responseClient(res, 200, '0001', '文章不存在')
+    }
   })
   .catch(err => {
     console.error(err)
@@ -125,7 +142,7 @@ exports.deleteArticle = (req, res) => {
   })
 }
 exports.getArticleList = (req, res) => {
-  let { state, origin, likes, pageNum = 1, pageSize = 10 } = req.body
+  let { userid, tagid, categoryid, state, origin, likes, pageNum = 1, pageSize = 10 } = req.body
   // 分页默认更新时间排序
   let options = {
     skip: pageNum - 1 < 0 ? 0 : (pageNum - 1) * pageSize,
@@ -149,6 +166,10 @@ exports.getArticleList = (req, res) => {
   } else if (origin) {
     countconditions = {origin: parseInt(origin)}
   }
+  // 根据用户查找
+  if (userid) {
+    countconditions = Object.assign(countconditions, {userid: userid})
+  }
   let responseData = {
     count: 0,
     list: [],
@@ -164,8 +185,43 @@ exports.getArticleList = (req, res) => {
           console.error('Error:' + error)
           // throw error
         } else {
-          responseData.list = result
-          responseClient(res, 200, '0000', '操作成功！', responseData)
+          User.find((error, result1) => {
+            if (err) {
+              console.error('Error:' + error)
+              // throw error
+            } else {
+              let nArr = JSON.parse(JSON.stringify(result))
+              nArr.forEach(element => {
+                element.created = timestampToTime(element.created)
+                element.name = getuserName(element.userid, JSON.parse(JSON.stringify(result1)))
+              })
+              let newList = []
+              if (tagid) {
+                nArr.forEach(item => {
+                  item.tags.forEach(value => {
+                    if (value._id === tagid) {
+                      newList.push(item);
+                    }
+                  })
+                })
+                let len = newList.length;
+                responseData.count = len;
+                responseData.list = newList;
+              } else if (categoryid) {
+                nArr.forEach(item => {
+                  if (item.category._id === categoryid) {
+                    newList.push(item);
+                  }
+                })
+                let len = newList.length;
+                responseData.count = len;
+                responseData.list = newList;
+              } else {
+                responseData.list = nArr
+              }  
+              responseClient(res, 200, '0000', '操作成功！', responseData)
+            }
+          })
         }
       })
         .populate([
