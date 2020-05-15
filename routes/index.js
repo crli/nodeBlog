@@ -2,7 +2,7 @@
  * @Author: crli
  * @Date: 2020-01-14 16:55:45
  * @LastEditors: crli
- * @LastEditTime: 2020-04-28 16:18:40
+ * @LastEditTime: 2020-05-15 14:07:52
  * @Description: file content
  */
 const user = require('./user')
@@ -19,6 +19,8 @@ module.exports = app => {
   app.post('/article/getArticleList', article.getArticleList)
   app.post('/article/getArticleDetail', article.getArticleDetail)
   app.post('/article/likeArticle', article.likeArticle)
+  app.post('/article/getHotArticleList', article.getHotArticleList)
+  app.post('/article/getArchive', article.getArchive)
   app.post('/category/getCategoryList', category.getCategoryList)
   app.post('/category/addCategory', category.addCategory)
   app.post('/category/getOneCategory', category.getOneCategory)

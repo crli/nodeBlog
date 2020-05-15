@@ -2,7 +2,7 @@
  * @Author: crli
  * @Date: 2020-04-20 15:48:49
  * @LastEditors: crli
- * @LastEditTime: 2020-05-09 16:54:03
+ * @LastEditTime: 2020-05-15 15:16:15
  * @Description: file content
  */
 import Article from '../models/article'
@@ -142,7 +142,7 @@ exports.deleteArticle = (req, res) => {
   })
 }
 exports.getArticleList = (req, res) => {
-  let { userid, tagid, categoryid, state, origin, likes, pageNum = 1, pageSize = 10 } = req.body
+  let { userid, tagid, categoryid, state, origin, likes, pageNum = 1, pageSize = 10, year , month } = req.body
   // 分页默认更新时间排序
   let options = {
     skip: pageNum - 1 < 0 ? 0 : (pageNum - 1) * pageSize,
@@ -170,10 +170,17 @@ exports.getArticleList = (req, res) => {
   if (userid) {
     countconditions = Object.assign(countconditions, {userid: userid})
   }
+  if (year && month) {
+    countconditions = Object.assign(countconditions, {created: {
+      "$gte": new Date(year + '-' + (month < 10 ? '0' + month : month) + '-' + '01'),
+      "$lte": new Date(year + '-' + (month < 10 ? '0' + (Number(month) + 1) : (Number(month) + 1)) + '-' + '01')
+    }})
+  }
   let responseData = {
     count: 0,
     list: [],
   }
+  console.log(countconditions)
   Article.count(countconditions, (err, count) => {
     console.log('111111111111111111111111111111111')
     if (err) {
@@ -297,4 +304,85 @@ exports.likeArticle = (req, res) => {
     console.log("doc.category:",doc.category)
     console.log("doc.tags:",doc.tags)
   });
+}
+exports.getHotArticleList = (req, res) => {
+  let { userid, pageNum = 1, pageSize = 5 } = req.body
+  // 分页默认更新时间排序
+  let options = {
+    skip: pageNum - 1 < 0 ? 0 : (pageNum - 1) * pageSize,
+    limit: pageSize,
+    sort: { views: -1 },
+  }
+  Article.find({userid: userid}, {}, options, (error, result) => {
+    if (error) {
+      console.error('Error:' + error)
+      // throw error
+    } else {
+      responseClient(res, 200, '0000', '操作成功！', result)
+    }
+  })
+    .populate([
+      { path: 'tags' },
+      { path: 'category' },
+    ])
+    .exec((err, doc) => {
+      console.log("doc.category:",doc.category)
+      console.log("doc.tags:",doc.tags)
+    })
+}
+exports.getArchive = (req, res) => {
+  let { userid } = req.body
+  Article.find({userid: userid}, (error, result) => {
+    if (error) {
+      console.error('Error:' + error)
+      // throw error
+    } else {
+      let obj = {}
+      result.forEach((time) => {
+        const date = new Date(time.created)
+        let y = date.getFullYear()
+        let m = date.getMonth() + 1
+        if (obj[y]) {
+          if (obj[y][m]) {
+            obj[y][m] += 1
+          } else {
+            obj[y][m] = 1
+          }
+        } else {
+          obj[y] = {}
+          obj[y][m] = 1
+        }
+      })
+      
+      // let data = {
+      //   2020: {
+      //     4: 4, 
+      //     5: 3
+      //   }
+      // }
+      let times = []
+      Object.keys(obj).forEach((ele) => {
+        let nobj = {
+          year: ele,
+          time: []
+        }
+        Object.keys(obj[ele]).forEach((mon) => {
+          nobj.time.push({
+            month: mon,
+            count: obj[ele][mon]
+          })
+        })
+        times.push(nobj)
+      })
+      responseClient(res, 200, '0000', '操作成功！', times)
+    }
+  })
+  .populate([
+    { path: 'tags' },
+    { path: 'category' },
+  ])
+  .exec((err, doc) => {
+    console.log("doc.category:",doc.category)
+    console.log("doc.tags:",doc.tags)
+  })
 }
