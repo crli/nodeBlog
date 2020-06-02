@@ -2,7 +2,7 @@
  * @Author: crli
  * @Date: 2020-01-14 16:55:45
  * @LastEditors: crli
- * @LastEditTime: 2020-04-28 14:13:46
+ * @LastEditTime: 2020-05-21 15:55:10
  * @Description: file content
  */
 import createError from 'http-errors'
@@ -47,6 +47,7 @@ router(app)
 // data server
 mongodb.connect()
 app.use(function(req, res, next) {
+  console.log(11111111111)
   checkToken(req, res, next)
 });
 // catch 404 and forward to error handler

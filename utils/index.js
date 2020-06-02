@@ -2,7 +2,7 @@
  * @Author: crli
  * @Date: 2020-01-15 09:58:48
  * @LastEditors: crli
- * @LastEditTime: 2020-04-20 16:40:07
+ * @LastEditTime: 2020-06-02 10:57:15
  * @Description: file content
  */
 import crypto from 'crypto';
@@ -72,6 +72,7 @@ const obj = {
 			}
 			userInfo = decoded
 		})
+		console.log(userInfo)
 		if (!userInfo.email && !userInfo.password && !userInfo.id) {
 			responseClient(res, 401, '0004', '验证失败请重新登陆')
 			return

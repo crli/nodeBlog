@@ -2,7 +2,7 @@
  * @Author: crli
  * @Date: 2020-01-14 16:55:45
  * @LastEditors: crli
- * @LastEditTime: 2020-05-09 16:16:35
+ * @LastEditTime: 2020-06-02 10:57:31
  * @Description: file content
  */
 import User from '../models/user'
@@ -85,6 +85,7 @@ exports.login = (req, res) => {
 }
 
 exports.info = (req, res) => {
+  console.log(authorization(req, res))
   const { password, email } = authorization(req, res)
   //验证用户是否已经在数据库中
   User.findOne({email, password})
@@ -416,18 +417,42 @@ exports.info = (req, res) => {
             'actionList': null,
             'dataAccess': null
           }
-        ]
+          ]
         }
-        // {
-        //   ...obj,
-        //   'name': '天野远子',
-        //   'avatar': '/avatar2.jpg',
-        //   'lastLoginIp': '27.154.74.117',
-        //   'lastLoginTime': 1534837621348,
-        //   'creatorId': 'admin',
-        //   'roleId': 'admin',
-        //   'role': {}
-        // }
+        if (obj._id !== '5ec63e1c693692343497e800') { //bushi游客
+          obj.role.permissions.push(
+            {
+              'roleId': 'admin',
+              'permissionId': 'blog',
+              'permissionName': '平台管理',
+              'actions': '[{"action":"add","defaultCheck":false,"describe":"新增"},{"action":"query","defaultCheck":false,"describe":"查询"},{"action":"get","defaultCheck":false,"describe":"详情"},{"action":"update","defaultCheck":false,"describe":"修改"},{"action":"delete","defaultCheck":false,"describe":"删除"}]',
+              'actionEntitySet': [{
+                'action': 'add',
+                'describe': '新增',
+                'defaultCheck': false
+              }, {
+                'action': 'query',
+                'describe': '查询',
+                'defaultCheck': false
+              }, {
+                'action': 'get',
+                'describe': '详情',
+                'defaultCheck': false
+              }, {
+                'action': 'update',
+                'describe': '修改',
+                'defaultCheck': false
+              }, {
+                'action': 'delete',
+                'describe': '删除',
+                'defaultCheck': false
+              }],
+              'actionList': null,
+              'dataAccess': null
+            }
+          )
+          obj.name = '游客'
+        }
         console.log(obj)
         responseClient(res, 200, '0000', '成功', obj)
       } else {
