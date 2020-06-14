@@ -1,8 +1,8 @@
 /*
  * @Author: crli
  * @Date: 2020-01-14 16:55:45
- * @LastEditors: crli
- * @LastEditTime: 2020-05-21 15:55:10
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2020-06-14 10:35:39
  * @Description: file content
  */
 import createError from 'http-errors'
@@ -52,11 +52,13 @@ app.use(function(req, res, next) {
 });
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+  console.log(11111111111)
   next(createError(404));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
+  console.log(11111111111)
   // set locals, only providing error in development
   // console.log(res)
   res.locals.message = err.message;

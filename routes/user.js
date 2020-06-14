@@ -1,8 +1,8 @@
 /*
  * @Author: crli
  * @Date: 2020-01-14 16:55:45
- * @LastEditors: crli
- * @LastEditTime: 2020-06-02 10:57:31
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2020-06-14 12:18:08
  * @Description: file content
  */
 import User from '../models/user'
@@ -10,6 +10,7 @@ import { responseClient, md5, MD5_SUFFIX, createToken, authorization } from '../
 
 exports.register = (req, res) => {
   console.log(111)
+  console.log('11111111111111111111111111111111')
   let { password, email, type, name, phone } = req.body
   // if (!name) {
   //   responseClient(res, 400, '0004', '用户名不可为空')
@@ -419,7 +420,7 @@ exports.info = (req, res) => {
           }
           ]
         }
-        if (obj._id !== '5ec63e1c693692343497e800') { //bushi游客
+        if (obj.email !== 'youke@qq.com') { //bushi游客
           obj.role.permissions.push(
             {
               'roleId': 'admin',
