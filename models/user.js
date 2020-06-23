@@ -2,7 +2,7 @@
  * @Author: crli
  * @Date: 2020-01-15 11:00:51
  * @LastEditors: crli
- * @LastEditTime: 2020-04-15 16:27:11
+ * @LastEditTime: 2020-06-23 15:12:01
  * @Description: file content
  */
 const { mongoose } = require('../mongodb/db.js')
@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   },
   name: { 
     type: String,   
-    default: ''
+    default: '佚名'
   },
   password: {
     type: String,

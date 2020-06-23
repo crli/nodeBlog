@@ -2,13 +2,16 @@
  * @Author: crli
  * @Date: 2020-01-16 10:06:53
  * @LastEditors: crli
- * @LastEditTime: 2020-04-15 10:57:12
+ * @LastEditTime: 2020-06-23 15:44:09
  * @Description: file content
  */
 import mongoose from 'mongoose'
 import configlite from 'config-lite'
 import chalk from 'chalk'
 const config = configlite(__dirname)
+console.log('++++++++++++++++++++++++++')
+console.log(config)
+console.log('++++++++++++++++++++++++++')
 mongoose.Promise = global.Promise
 
 const db = mongoose.connection
