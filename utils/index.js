@@ -2,7 +2,7 @@
  * @Author: crli
  * @Date: 2020-01-15 09:58:48
  * @LastEditors: crli
- * @LastEditTime: 2020-06-02 10:57:15
+ * @LastEditTime: 2020-06-23 14:07:33
  * @Description: file content
  */
 import crypto from 'crypto';
@@ -41,7 +41,7 @@ const obj = {
     return token;
 	},
 	checkToken(req, res, next) {
-		if (req.url != '/auth/login' && req.url != '/auth/register') {
+		if (req.url.indexOf('/auth/login') > -1 && req.url.indexOf('/auth/register') > -1) {
 			let token = req.headers['authorization']
 			// 解析 token
 			if (token) {
